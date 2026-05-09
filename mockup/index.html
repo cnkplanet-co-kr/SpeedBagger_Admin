@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>web-admin — 디자인 시안 목록</title>
+  <style>
+    :root {
+      --orange: #F47920;
+      --navy: #1D3A8A;
+      --navy-deep: #111F55;
+      --gray-50: #F9FAFB;
+      --gray-100: #F3F4F6;
+      --gray-200: #E5E7EB;
+      --gray-400: #9CA3AF;
+      --gray-900: #111827;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, 'Noto Sans KR', sans-serif;
+      background: var(--gray-50);
+      color: var(--gray-900);
+      min-height: 100vh;
+    }
+
+    /* Top bar */
+    header {
+      background: var(--navy-deep);
+      padding: 0 40px;
+      height: 60px;
+      display: flex; align-items: center; justify-content: space-between;
+      position: relative;
+    }
+    header::after {
+      content: '';
+      position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--navy), var(--orange));
+    }
+    .header-logo {
+      display: flex; align-items: center; gap: 10px;
+    }
+    .header-logo-wrap {
+      background: rgba(255,255,255,.92);
+      border-radius: 6px; padding: 3px 10px;
+    }
+    .header-logo-wrap img { height: 26px; display: block; }
+    .header-badge {
+      font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+      color: rgba(255,255,255,.4); text-transform: uppercase;
+    }
+    .header-title {
+      font-size: 13px; color: rgba(255,255,255,.5);
+    }
+
+    /* Main */
+    main {
+      max-width: 960px; margin: 0 auto;
+      padding: 52px 24px 80px;
+    }
+
+    .page-label {
+      font-size: 11px; font-weight: 700; letter-spacing: 2px;
+      color: var(--orange); text-transform: uppercase; margin-bottom: 10px;
+    }
+    .page-title {
+      font-size: 32px; font-weight: 800; color: var(--navy);
+      letter-spacing: -0.5px; margin-bottom: 10px;
+    }
+    .page-desc {
+      font-size: 15px; color: var(--gray-400); margin-bottom: 48px;
+      line-height: 1.6;
+    }
+
+    /* Cards */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .card {
+      background: #fff;
+      border: 1px solid var(--gray-200);
+      border-radius: 16px;
+      overflow: hidden;
+      text-decoration: none;
+      color: inherit;
+      transition: all .22s;
+      display: flex; flex-direction: column;
+      box-shadow: 0 2px 8px rgba(17,24,39,.05);
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(29,58,138,.12);
+      border-color: transparent;
+    }
+
+    /* Preview thumbnail */
+    .card-thumb {
+      height: 190px;
+      display: flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden;
+    }
+    .card-thumb-inner {
+      width: 85%; height: 80%;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid rgba(0,0,0,.08);
+      box-shadow: 0 4px 16px rgba(0,0,0,.1);
+      position: relative;
+    }
+
+    /* Mockup 1 preview */
+    .thumb-1 { background: linear-gradient(135deg, #1D3A8A 55%, #fff 55%); }
+    .thumb-1 .mini-nav {
+      position: absolute; top: 0; left: 0; right: 0; height: 18px;
+      background: #1D3A8A;
+      display: flex; align-items: center; padding: 0 8px; gap: 4px;
+    }
+    .mini-nav-dot { width: 5px; height: 5px; border-radius: 50%; }
+    .thumb-1 .mini-body {
+      position: absolute; top: 18px; left: 0; right: 0; bottom: 0;
+      display: flex;
+    }
+    .thumb-1 .mini-left { width: 40%; background: #1D3A8A; }
+    .thumb-1 .mini-right { flex: 1; background: #fff; padding: 6px; }
+    .mini-table-row {
+      height: 7px; background: var(--gray-100); border-radius: 2px; margin-bottom: 3px;
+    }
+    .mini-btn { height: 8px; width: 40px; background: var(--orange); border-radius: 3px; margin-bottom: 6px; margin-left: auto; }
+
+    /* Mockup 2 preview */
+    .thumb-2 { background: var(--gray-100); }
+    .thumb-2 .mini-sidebar {
+      position: absolute; top: 0; left: 0; bottom: 0; width: 30%;
+      background: #111F55;
+      display: flex; flex-direction: column; padding: 6px;
+    }
+    .mini-sb-item { height: 6px; background: rgba(255,255,255,.15); border-radius: 2px; margin-bottom: 3px; }
+    .mini-sb-item.act { background: rgba(244,121,32,.4); }
+    .thumb-2 .mini-main {
+      position: absolute; top: 0; left: 30%; right: 0; bottom: 0;
+      background: #F0F2F8; padding: 6px;
+    }
+    .mini-topbar { height: 10px; background: #fff; border-radius: 2px; margin-bottom: 4px; }
+    .mini-stat-row { display: flex; gap: 3px; margin-bottom: 4px; }
+    .mini-stat { flex: 1; height: 18px; background: #fff; border-radius: 3px; }
+
+    /* Mockup 3 preview */
+    .thumb-3 { background: var(--gray-50); }
+    .thumb-3 .mini-topnav {
+      position: absolute; top: 0; left: 0; right: 0; height: 14px;
+      background: #fff; border-bottom: 1px solid var(--gray-200);
+      display: flex; align-items: center; padding: 0 6px; gap: 4px;
+    }
+    .mini-nav-link { width: 20px; height: 4px; background: var(--gray-200); border-radius: 1px; }
+    .mini-nav-link.act { background: var(--orange); }
+    .thumb-3 .mini-content {
+      position: absolute; top: 14px; left: 0; right: 0; bottom: 0;
+      padding: 6px;
+    }
+    .mini-search { height: 7px; background: #fff; border: 1px solid var(--gray-200); border-radius: 3px; width: 40%; margin-bottom: 4px; }
+    .mini-table-head { height: 7px; background: var(--gray-100); border-radius: 2px; margin-bottom: 2px; }
+
+    /* Card body */
+    .card-body {
+      padding: 20px 22px 22px;
+      flex: 1; display: flex; flex-direction: column;
+    }
+
+    .card-num {
+      font-size: 11px; font-weight: 700; letter-spacing: 1.5px;
+      color: var(--orange); text-transform: uppercase; margin-bottom: 6px;
+    }
+    .card-title {
+      font-size: 17px; font-weight: 700; color: var(--navy);
+      margin-bottom: 6px;
+    }
+    .card-desc {
+      font-size: 13px; color: var(--gray-400);
+      line-height: 1.6; flex: 1; margin-bottom: 16px;
+    }
+
+    .card-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 18px; }
+    .tag {
+      padding: 3px 9px; border-radius: 99px;
+      font-size: 11px; font-weight: 600;
+      background: var(--gray-100); color: var(--gray-400);
+    }
+    .tag.navy { background: #EEF2FF; color: var(--navy); }
+    .tag.orange { background: #FFF4EB; color: var(--orange); }
+
+    .card-link {
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 10px;
+      background: var(--navy); color: #fff;
+      border-radius: 10px;
+      font-size: 14px; font-weight: 600;
+      text-decoration: none;
+      transition: background .18s;
+    }
+    .card-link:hover { background: var(--orange); }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      font-size: 12px; color: var(--gray-400);
+      padding: 28px;
+      border-top: 1px solid var(--gray-200);
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-logo">
+    <div class="header-logo-wrap">
+      <img src="./logo.png" alt="Logo" />
+    </div>
+    <span class="header-badge">Admin Portal</span>
+  </div>
+  <span class="header-title">web-admin / mockup</span>
+</header>
+
+<main>
+  <div class="page-label">Design Mockup</div>
+  <h1 class="page-title">디자인 시안 목록</h1>
+  <p class="page-desc">
+    web-admin 프로젝트의 UI 방향을 결정하기 위한 3가지 시안입니다.<br/>
+    각 시안을 클릭해 로그인, 어드민 메인, 모달 화면을 확인하세요.
+  </p>
+
+  <div class="card-grid">
+
+    <!-- 시안 1 -->
+    <a class="card" href="./design-mockup.html" target="_blank">
+      <div class="card-thumb thumb-1">
+        <div class="card-thumb-inner">
+          <div class="mini-nav">
+            <div class="mini-nav-dot" style="background:#F47920"></div>
+            <div class="mini-nav-dot" style="background:rgba(255,255,255,.3)"></div>
+            <div class="mini-nav-dot" style="background:rgba(255,255,255,.3)"></div>
+          </div>
+          <div class="mini-body">
+            <div class="mini-left"></div>
+            <div class="mini-right">
+              <div class="mini-btn"></div>
+              <div class="mini-table-row"></div>
+              <div class="mini-table-row" style="width:80%"></div>
+              <div class="mini-table-row" style="width:90%"></div>
+              <div class="mini-table-row" style="width:70%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-num">시안 01</div>
+        <div class="card-title">상단 GNB — 임팩트형</div>
+        <div class="card-desc">네이비 상단 내비게이션 + 좌우 분할 로그인 화면. 브랜드 컬러가 강하게 드러나는 스타일.</div>
+        <div class="card-tags">
+          <span class="tag navy">상단 GNB</span>
+          <span class="tag orange">분할 로그인</span>
+          <span class="tag">네이비 테이블 헤더</span>
+        </div>
+        <span class="card-link">시안 보기 →</span>
+      </div>
+    </a>
+
+    <!-- 시안 2 -->
+    <a class="card" href="./design-mockup-2.html" target="_blank">
+      <div class="card-thumb thumb-2">
+        <div class="card-thumb-inner">
+          <div class="mini-sidebar">
+            <div class="mini-sb-item" style="margin-bottom:6px;height:8px"></div>
+            <div class="mini-sb-item act"></div>
+            <div class="mini-sb-item"></div>
+            <div class="mini-sb-item"></div>
+          </div>
+          <div class="mini-main">
+            <div class="mini-topbar"></div>
+            <div class="mini-stat-row">
+              <div class="mini-stat"></div>
+              <div class="mini-stat"></div>
+              <div class="mini-stat"></div>
+              <div class="mini-stat"></div>
+            </div>
+            <div class="mini-table-row"></div>
+            <div class="mini-table-row" style="width:85%"></div>
+            <div class="mini-table-row" style="width:90%"></div>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-num">시안 02</div>
+        <div class="card-title">좌측 사이드바 — 대시보드형</div>
+        <div class="card-desc">다크 네이비 사이드바 + 스탯 카드. 정보량이 많거나 메뉴가 늘어날 때 유리한 구조.</div>
+        <div class="card-tags">
+          <span class="tag navy">좌측 사이드바</span>
+          <span class="tag orange">다크 로그인</span>
+          <span class="tag">스탯 카드</span>
+        </div>
+        <span class="card-link">시안 보기 →</span>
+      </div>
+    </a>
+
+    <!-- 시안 3 -->
+    <a class="card" href="./design-mockup-3.html" target="_blank">
+      <div class="card-thumb thumb-3">
+        <div class="card-thumb-inner">
+          <div class="mini-topnav">
+            <div class="mini-nav-link act"></div>
+            <div class="mini-nav-link"></div>
+            <div class="mini-nav-link"></div>
+          </div>
+          <div class="mini-content">
+            <div class="mini-search"></div>
+            <div class="mini-table-head"></div>
+            <div class="mini-table-row"></div>
+            <div class="mini-table-row" style="width:90%"></div>
+            <div class="mini-table-row" style="width:80%"></div>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-num">시안 03</div>
+        <div class="card-title">미니멀 SaaS — 화이트형</div>
+        <div class="card-desc">화이트 상단 GNB + 검색/필터 툴바. 심플하고 확장성이 높은 경량 SaaS 스타일.</div>
+        <div class="card-tags">
+          <span class="tag navy">상단 GNB</span>
+          <span class="tag orange">센터 로그인</span>
+          <span class="tag">검색 + 필터</span>
+        </div>
+        <span class="card-link">시안 보기 →</span>
+      </div>
+    </a>
+
+  </div>
+</main>
+
+<footer>
+  web-admin · 디자인 시안 &nbsp;·&nbsp; © 2025 CNK Planet
+</footer>
+
+</body>
+</html>
