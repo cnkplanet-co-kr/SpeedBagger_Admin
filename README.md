@@ -1,15 +1,50 @@
-# SpeedBagger_Admin
+# React + TypeScript + Vite
 
-포장기 프로그램 Admin
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-## 디자인 시안
+Currently, two official plugins are available:
 
-👉 **[시안 목록 보기](https://cnkplanet.github.io/SpeedBagger_Admin/mockup/)**
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-| 시안 | 스타일 | 링크 |
-|------|--------|------|
-| 시안 1 | 상단 GNB · 임팩트형 | [보기](https://cnkplanet.github.io/SpeedBagger_Admin/mockup/design-mockup.html) |
-| 시안 2 | 좌측 사이드바 · 대시보드형 | [보기](https://cnkplanet.github.io/SpeedBagger_Admin/mockup/design-mockup-2.html) |
-| 시안 3 | 미니멀 · SaaS형 | [보기](https://cnkplanet.github.io/SpeedBagger_Admin/mockup/design-mockup-3.html) |
+## Expanding the ESLint configuration
 
-> **GitHub Pages 설정 필요:** `Settings → Pages → Branch: main / (root)` 로 활성화하면 위 링크가 동작합니다.
+If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+
+- Configure the top-level `parserOptions` property like this:
+
+```js
+export default tseslint.config({
+  languageOptions: {
+    // other options...
+    parserOptions: {
+      project: ['./tsconfig.node.json', './tsconfig.app.json'],
+      tsconfigRootDir: import.meta.dirname,
+    },
+  },
+})
+```
+
+- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
+- Optionally add `...tseslint.configs.stylisticTypeChecked`
+- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+
+```js
+// eslint.config.js
+import react from 'eslint-plugin-react'
+
+export default tseslint.config({
+  // Set the react version
+  settings: { react: { version: '18.3' } },
+  plugins: {
+    // Add the react plugin
+    react,
+  },
+  rules: {
+    // other rules...
+    // Enable its recommended rules
+    ...react.configs.recommended.rules,
+    ...react.configs['jsx-runtime'].rules,
+  },
+})
+```

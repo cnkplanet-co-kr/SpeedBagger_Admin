@@ -1,0 +1,206 @@
+.layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #F9FAFB;
+}
+
+.topnav {
+  height: 56px;
+  background: #fff;
+  border-bottom: 1px solid #E5E7EB;
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.topnav::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #1D3A8A, #F47920);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-right: 32px;
+}
+
+.brandLogo {
+  height: 32px;
+  display: block;
+}
+
+.adminBadge {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  background: #F0F3FF;
+  color: #1D3A8A;
+  padding: 2px 7px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.navLinks {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.navGroup {
+  position: relative;
+}
+
+.navTrigger {
+  padding: 0 16px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #4B5563;
+  cursor: pointer;
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  transition: color .15s;
+}
+
+.navTrigger:hover {
+  color: #111827;
+}
+
+.navTrigger.active {
+  color: #F47920;
+  border-bottom-color: #F47920;
+  font-weight: 600;
+}
+
+.navArrow {
+  font-size: 10px;
+  color: #9CA3AF;
+  transition: transform .2s;
+}
+
+.navGroup:hover .navArrow {
+  transform: rotate(180deg);
+}
+
+.disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.dropdown {
+  position: absolute;
+  top: calc(100% + 2px);
+  left: -8px;
+  min-width: 210px;
+  background: #fff;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(17,24,39,.1);
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-6px);
+  transition: all .18s;
+}
+
+.navGroup:hover .dropdown {
+  opacity: 1;
+  pointer-events: all;
+  transform: translateY(0);
+}
+
+.ddHeader {
+  padding: 10px 16px 8px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #9CA3AF;
+  text-transform: uppercase;
+  border-bottom: 1px solid #F3F4F6;
+}
+
+.ddItem {
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: #4B5563;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background .12s;
+}
+
+.ddItem:hover {
+  background: #F9FAFB;
+  color: #111827;
+}
+
+.ddActive {
+  background: #FFF7F0;
+  color: #D96B18;
+  font-weight: 600;
+}
+
+.ddIcon {
+  font-size: 15px;
+  width: 20px;
+  text-align: center;
+}
+
+.ddFooter {
+  padding: 8px 16px 10px;
+  font-size: 11px;
+  color: #9CA3AF;
+  border-top: 1px solid #F3F4F6;
+}
+
+.navRight {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.divider {
+  width: 1px;
+  height: 20px;
+  background: #E5E7EB;
+}
+
+.userBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background .15s;
+}
+
+.userBtn:hover {
+  background: #F3F4F6;
+}
+
+.userName {
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.content {
+  max-width: 1100px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 32px 24px;
+}

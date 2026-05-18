@@ -1,0 +1,124 @@
+.page {
+  min-height: 100vh;
+  background: #F9FAFB;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.page::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(29,58,138,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(29,58,138,.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.page::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #1D3A8A, #F47920);
+}
+
+.card {
+  position: relative;
+  z-index: 1;
+  width: 420px;
+  background: #fff;
+  border-radius: 20px;
+  padding: 44px 40px;
+  border: 1px solid #E5E7EB;
+  box-shadow: 0 4px 24px rgba(17,24,39,.08), 0 1px 4px rgba(17,24,39,.04);
+}
+
+.logoWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 36px;
+}
+
+.logo {
+  height: 64px;
+  display: block;
+}
+
+.tag {
+  margin-top: 10px;
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: #9CA3AF;
+  text-transform: uppercase;
+}
+
+.title {
+  font-size: 22px;
+  font-weight: 700;
+  text-align: center;
+  color: #111827;
+  margin-bottom: 6px;
+}
+
+.sub {
+  font-size: 14px;
+  color: #9CA3AF;
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.googleBtn {
+  width: 100%;
+  padding: 13px 18px;
+  background: #fff;
+  border: 1.5px solid #E5E7EB;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+  cursor: pointer;
+  transition: all .18s;
+  box-shadow: 0 1px 4px rgba(0,0,0,.06);
+}
+
+.googleBtn:hover {
+  border-color: #D9E1FF;
+  background: #F0F3FF;
+  box-shadow: 0 2px 8px rgba(29,58,138,.1);
+}
+
+.orRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0 12px;
+}
+
+.orRow::before,
+.orRow::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #E5E7EB;
+}
+
+.orLabel {
+  font-size: 12px;
+  color: #9CA3AF;
+  white-space: nowrap;
+}
+
+.footer {
+  margin-top: 28px;
+  text-align: center;
+  font-size: 12px;
+  color: #9CA3AF;
+}
