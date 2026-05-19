@@ -1,8 +1,8 @@
-name: Deploy Dev
+name: Deploy Production
 
 on:
   push:
-    branches: [dev]
+    branches: [main]
 
 jobs:
   deploy:
@@ -19,8 +19,8 @@ jobs:
 
       - run: npm run build
         env:
-          VITE_APP_ENV: dev
-          VITE_API_URL: https://api-dev.cnkplanet.co.kr
+          VITE_APP_ENV: production
+          VITE_API_URL: https://api.cnkplanet.co.kr
           VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
 
       - uses: JamesIves/github-pages-deploy-action@v4
