@@ -126,7 +126,7 @@ export default function WorkStatPage() {
       fixed: 'right',
       align: 'right' as const,
       width: 160,
-      render: (cell: WorkStatCell | undefined, r: any) =>
+      render: (cell: WorkStatCell | undefined) =>
         <Cell cell={cell} bold />,
     },
   ]
