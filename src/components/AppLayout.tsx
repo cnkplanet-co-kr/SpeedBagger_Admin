@@ -1,8 +1,11 @@
 import { Outlet, NavLink } from 'react-router-dom'
-import { Dropdown, Avatar } from 'antd'
+import { Dropdown, Avatar, Segmented } from 'antd'
 import type { MenuProps } from 'antd'
 import { DownOutlined, LogoutOutlined } from '@ant-design/icons'
 import logo from '../assets/logo.png'
+import { getEnv, setEnv, ENV_LABELS, AVAILABLE_ENVS } from '../lib/env'
+import type { AppEnv } from '../lib/env'
+import { clearAuth } from '../lib/auth'
 import styles from './AppLayout.module.css'
 
 interface Props {
@@ -11,6 +14,18 @@ interface Props {
 }
 
 export default function AppLayout({ onLogout, userName }: Props) {
+  const env = getEnv()
+  const isDev = env === 'dev'
+
+  // 환경 전환: 토큰은 환경별로 다르므로 로그아웃 후 새로고침하여
+  // 선택한 백엔드에 다시 로그인하도록 한다.
+  function switchEnv(next: AppEnv) {
+    if (next === env) return
+    setEnv(next)
+    clearAuth()
+    window.location.reload()
+  }
+
   const userMenu: MenuProps = {
     items: [
       {
@@ -24,7 +39,7 @@ export default function AppLayout({ onLogout, userName }: Props) {
 
   return (
     <div className={styles.layout}>
-      <nav className={styles.topnav}>
+      <nav className={`${styles.topnav} ${isDev ? styles.devMode : ''}`}>
         <div className={styles.brand}>
           <img src={logo} alt="SpeedBagger" className={styles.brandLogo} />
           <span className={styles.adminBadge}>Admin</span>
@@ -109,6 +124,13 @@ export default function AppLayout({ onLogout, userName }: Props) {
         </div>
 
         <div className={styles.navRight}>
+          <Segmented<AppEnv>
+            size="small"
+            value={env}
+            onChange={switchEnv}
+            options={AVAILABLE_ENVS.map((e) => ({ label: ENV_LABELS[e], value: e }))}
+            className={isDev ? 'env-switch-dev' : undefined}
+          />
           <div className={styles.divider} />
           <Dropdown menu={userMenu} placement="bottomRight">
             <div className={styles.userBtn}>

@@ -19,10 +19,9 @@ jobs:
 
       - run: npm ci
 
+      # API URL은 런타임 토글(운영/DEV)로 전환하므로 빌드 시 주입하지 않는다.
       - run: npm run build
         env:
-          VITE_APP_ENV: production
-          VITE_API_URL: https://api.cnkplanet.co.kr
           VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
 
       - uses: JamesIves/github-pages-deploy-action@v4
