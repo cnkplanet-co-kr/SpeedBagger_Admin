@@ -14,3 +14,13 @@ body {
 #root {
   min-height: 100vh;
 }
+
+/* 환경 선택 토글: 개발(dev) 선택 시 진한 핑크 배경 + 흰색 글자 */
+.env-switch-dev .ant-segmented-item-selected,
+.env-switch-dev .ant-segmented-thumb {
+  background-color: #DB2777 !important;
+}
+
+.env-switch-dev .ant-segmented-item-selected .ant-segmented-item-label {
+  color: #fff !important;
+}

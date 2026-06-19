@@ -52,7 +52,7 @@ export default function App() {
         {!user ? (
           <LoginPage onApproved={handleApproved} />
         ) : (
-          <BrowserRouter>
+          <BrowserRouter basename={import.meta.env.BASE_URL}>
             <Routes>
               <Route element={<AppLayout onLogout={handleLogout} userName={user.name} />}>
                 <Route index element={<Navigate to="/machine-status" replace />} />

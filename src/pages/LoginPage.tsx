@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import { useGoogleLogin } from '@react-oauth/google'
-import { Alert, Spin } from 'antd'
+import { Alert, Spin, Segmented } from 'antd'
 import logo from '../assets/logo.png'
 import { api } from '../lib/api'
 import { saveAuth } from '../lib/auth'
+import { getEnv, setEnv, ENV_LABELS, AVAILABLE_ENVS } from '../lib/env'
+import type { AppEnv } from '../lib/env'
 import styles from './LoginPage.module.css'
 
 export type AuthStatus = 'idle' | 'loading' | 'pending' | 'rejected'
@@ -15,6 +17,12 @@ interface Props {
 export default function LoginPage({ onApproved }: Props) {
   const [status, setStatus] = useState<AuthStatus>('idle')
   const [errorMsg, setErrorMsg] = useState('')
+  const [env, setEnvState] = useState<AppEnv>(getEnv())
+
+  function changeEnv(next: AppEnv) {
+    setEnv(next)
+    setEnvState(next)
+  }
 
   const login = useGoogleLogin({
     onSuccess: async ({ access_token }) => {
@@ -64,6 +72,20 @@ export default function LoginPage({ onApproved }: Props) {
 
         <h1 className={styles.title}>관리자 로그인</h1>
         <p className={styles.sub}>계속하려면 구글 계정으로 로그인하세요.</p>
+
+        <div style={{ marginBottom: 14, textAlign: 'center' }}>
+          <Segmented<AppEnv>
+            value={env}
+            onChange={changeEnv}
+            options={AVAILABLE_ENVS.map((e) => ({ label: ENV_LABELS[e], value: e }))}
+            className={env === 'dev' ? 'env-switch-dev' : undefined}
+          />
+          {env === 'dev' && (
+            <div style={{ marginTop: 6, fontSize: 12, fontWeight: 600, color: '#DB2777' }}>
+              ⚠️ DEV 환경에 접속합니다
+            </div>
+          )}
+        </div>
 
         <button
           className={styles.googleBtn}

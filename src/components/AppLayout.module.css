@@ -25,6 +25,16 @@
   background: linear-gradient(90deg, #1D3A8A, #F47920);
 }
 
+/* DEV 환경: 상단바를 핑크 배경으로 표시 */
+.topnav.devMode {
+  background: #FCE7F3;
+  border-bottom-color: #F9A8D4;
+}
+
+.topnav.devMode::before {
+  background: linear-gradient(90deg, #DB2777, #F472B6);
+}
+
 .brand {
   display: flex;
   align-items: center;
