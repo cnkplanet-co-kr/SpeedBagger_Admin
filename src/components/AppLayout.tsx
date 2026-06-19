@@ -51,7 +51,7 @@ export default function AppLayout({ onLogout, userName }: Props) {
               to="/machine-status"
               className={() => {
                 const path = window.location.pathname
-                const isActive = ['/machine-status', '/work-stat'].some(p => path.startsWith(p))
+                const isActive = ['/machine-status', '/work-stat', '/order-history'].some(p => path.startsWith(p))
                 return `${styles.navTrigger} ${isActive ? styles.active : ''}`
               }}
             >
@@ -65,7 +65,10 @@ export default function AppLayout({ onLogout, userName }: Props) {
               <NavLink to="/work-stat" className={({ isActive }) => `${styles.ddItem} ${isActive ? styles.ddActive : ''}`}>
                 <span className={styles.ddIcon}>📊</span> 작업 현황
               </NavLink>
-              <div className={styles.ddFooter}>총 2개 메뉴</div>
+              <NavLink to="/order-history" className={({ isActive }) => `${styles.ddItem} ${isActive ? styles.ddActive : ''}`}>
+                <span className={styles.ddIcon}>📋</span> 작업내역조회
+              </NavLink>
+              <div className={styles.ddFooter}>총 3개 메뉴</div>
             </div>
           </div>
 

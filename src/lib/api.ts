@@ -189,6 +189,39 @@ export interface WorkStatResult {
   cells: Record<string, WorkStatCell>
 }
 
+export interface OrderHistoryRow {
+  id: number
+  kind: string
+  waybill_no: string
+  work_flag: string
+  scan_date: string
+  machine_name: string
+  reprint_count: number
+  aux_printed: boolean
+  product_cd: string
+  product_name: string
+  product_option: string
+  order_cs: string
+  cs_id: string | number
+  cs_name: string
+  barcode: string
+  order_qty: number
+  order_no: string
+  order_date: string
+  collect_date: string
+  trans_date: string
+  shipper_name: string
+  shop_name: string
+  recv_name: string
+}
+
+export interface OrderHistoryResponse {
+  data: OrderHistoryRow[]
+  total: number
+  waybill_count: number
+  product_qty: number
+}
+
 export const api = {
   // Auth
   googleLogin: (accessToken: string) =>
@@ -278,4 +311,11 @@ export const api = {
 
   getWorkStats: (params: Record<string, string | number>) =>
     request<WorkStatResult>(`/api/admin/stats/work?${new URLSearchParams(params as Record<string, string>)}`),
+
+  // Order History (작업내역조회) — 백엔드는 admin JWT로 보호되는 아래 경로를 제공해야 함
+  getOrderHistory: (params: Record<string, string | number>) =>
+    request<OrderHistoryResponse>(`/api/admin/orders/history?${new URLSearchParams(params as Record<string, string>)}`),
+  // 단건 삭제(영구) — 백엔드에서 아카이브로 이관 처리
+  deleteOrder: (id: number) =>
+    request<void>(`/api/admin/orders/${id}`, { method: 'DELETE' }),
 }
