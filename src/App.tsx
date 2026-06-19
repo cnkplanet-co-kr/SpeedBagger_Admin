@@ -13,6 +13,7 @@ import AccountsPage from './pages/accounts/AccountsPage'
 import MachineSettingsPage from './pages/machine-settings/MachineSettingsPage'
 import MonitoringPage from './pages/monitoring/MonitoringPage'
 import WorkStatPage from './pages/dashboard/WorkStatPage'
+import OrderHistoryPage from './pages/order-history/OrderHistoryPage'
 import { getStoredUser, getStoredToken, isTokenExpired, clearAuth } from './lib/auth'
 import type { AuthUser } from './lib/auth'
 
@@ -63,6 +64,7 @@ export default function App() {
                 <Route path="/machines" element={<MachineSettingsPage />} />
                 <Route path="/monitoring" element={<MonitoringPage />} />
                 <Route path="/work-stat" element={<WorkStatPage />} />
+                <Route path="/order-history" element={<OrderHistoryPage />} />
               </Route>
             </Routes>
           </BrowserRouter>

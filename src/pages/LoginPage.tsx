@@ -1,10 +1,10 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useGoogleLogin } from '@react-oauth/google'
 import { Alert, Spin, Segmented } from 'antd'
 import logo from '../assets/logo.png'
 import { api } from '../lib/api'
 import { saveAuth } from '../lib/auth'
-import { getEnv, setEnv, ENV_LABELS, AVAILABLE_ENVS } from '../lib/env'
+import { setEnv, ENV_LABELS, AVAILABLE_ENVS } from '../lib/env'
 import type { AppEnv } from '../lib/env'
 import styles from './LoginPage.module.css'
 
@@ -17,7 +17,13 @@ interface Props {
 export default function LoginPage({ onApproved }: Props) {
   const [status, setStatus] = useState<AuthStatus>('idle')
   const [errorMsg, setErrorMsg] = useState('')
-  const [env, setEnvState] = useState<AppEnv>(getEnv())
+  // 로그인 화면에서는 저장된 값과 무관하게 항상 '개발'을 기본 선택으로 둔다.
+  const LOGIN_DEFAULT_ENV: AppEnv = 'dev'
+  const [env, setEnvState] = useState<AppEnv>(LOGIN_DEFAULT_ENV)
+
+  useEffect(() => {
+    setEnv(LOGIN_DEFAULT_ENV)
+  }, [])
 
   function changeEnv(next: AppEnv) {
     setEnv(next)
