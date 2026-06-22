@@ -308,6 +308,10 @@ export const api = {
     request<LogPage<UnifiedLog>>(`/api/admin/logs?${new URLSearchParams(params as Record<string, string>)}`),
   getAPICallLogDetail: (id: number) =>
     request<{ request: string | null; response: string | null }>(`/api/admin/logs/api-calls/${id}/detail`),
+  deleteLogs: (params: { period?: '1y' | '6m' | '3m'; before?: string }) =>
+    request<{ system_deleted: number; api_call_deleted: number; cutoff: string }>(
+      `/api/admin/logs?${new URLSearchParams(params as Record<string, string>)}`, { method: 'DELETE' },
+    ),
 
   getWorkStats: (params: Record<string, string | number>) =>
     request<WorkStatResult>(`/api/admin/stats/work?${new URLSearchParams(params as Record<string, string>)}`),
