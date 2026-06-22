@@ -56,6 +56,11 @@ export default function MonitoringPage() {
   const [page, setPage] = useState(1)
   const [loading, setLoading] = useState(false)
 
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false)
+  const [deletePeriod, setDeletePeriod] = useState<'1y' | '6m' | '3m' | 'custom'>('1y')
+  const [deleteBefore, setDeleteBefore] = useState<Dayjs | null>(null)
+  const [deleting, setDeleting] = useState(false)
+
   const [detailModalOpen, setDetailModalOpen] = useState(false)
   const [detailLog, setDetailLog] = useState<UnifiedLog | null>(null)
   const [detailContent, setDetailContent] = useState<{ request: string | null; response: string | null } | null>(null)
@@ -103,6 +108,41 @@ export default function MonitoringPage() {
   }
 
   function handleSearch() { setPage(1); fetchLogs(1) }
+
+  const PERIOD_LABEL: Record<'1y' | '6m' | '3m', string> = { '1y': '1년', '6m': '6개월', '3m': '3개월' }
+
+  function handleDeleteClick() {
+    let desc: string
+    if (deletePeriod === 'custom') {
+      if (!deleteBefore) { message.warning('삭제 기준 날짜를 선택하세요.'); return }
+      desc = `${deleteBefore.format('YYYY-MM-DD')} 이전`
+    } else {
+      desc = `${PERIOD_LABEL[deletePeriod]} 전 이전`
+    }
+    Modal.confirm({
+      title: '정말 삭제하시겠습니까?',
+      content: `${desc}의 시스템 로그와 API 호출 로그가 영구적으로 삭제됩니다. 이 작업은 되돌릴 수 없습니다.`,
+      okText: '삭제', okType: 'danger', cancelText: '취소',
+      onOk: doDelete,
+    })
+  }
+
+  async function doDelete() {
+    setDeleting(true)
+    try {
+      const params = deletePeriod === 'custom'
+        ? { before: deleteBefore!.format('YYYY-MM-DD') }
+        : { period: deletePeriod }
+      const res = await api.deleteLogs(params)
+      message.success(`삭제 완료 (시스템 ${res.system_deleted}건, API ${res.api_call_deleted}건)`)
+      setDeleteModalOpen(false)
+      fetchLogs(page)
+    } catch {
+      message.error('로그 삭제에 실패했습니다.')
+    } finally {
+      setDeleting(false)
+    }
+  }
 
   useEffect(() => {
     if (autoRefresh) {
@@ -211,10 +251,13 @@ export default function MonitoringPage() {
           <Radio.Button value="asc">오래된순</Radio.Button>
         </Radio.Group>
         <Button type="primary" onClick={handleSearch}>조회</Button>
-        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8 }}>
-          <ReloadOutlined spin={loading} style={{ color: autoRefresh ? '#1D3A8A' : '#9CA3AF' }} />
-          <span style={{ fontSize: 13, color: '#6B7280' }}>자동새로고침 (1분)</span>
-          <Switch size="small" checked={autoRefresh} onChange={setAutoRefresh} />
+        <div style={{ marginLeft: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
+          <Button danger size="small" onClick={() => setDeleteModalOpen(true)}>로그삭제</Button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <ReloadOutlined spin={loading} style={{ color: autoRefresh ? '#1D3A8A' : '#9CA3AF' }} />
+            <span style={{ fontSize: 13, color: '#6B7280' }}>자동새로고침 (1분)</span>
+            <Switch size="small" checked={autoRefresh} onChange={setAutoRefresh} />
+          </div>
         </div>
       </div>
 
@@ -312,6 +355,37 @@ export default function MonitoringPage() {
               </div>
             </>
         }
+      </Modal>
+
+      <Modal
+        title="로그 삭제"
+        open={deleteModalOpen}
+        onCancel={() => setDeleteModalOpen(false)}
+        onOk={handleDeleteClick}
+        okText="삭제"
+        okButtonProps={{ danger: true, loading: deleting }}
+        cancelText="취소"
+      >
+        <p style={{ margin: '0 0 12px', color: '#6B7280' }}>
+          선택한 기준 이전의 시스템 로그와 API 호출 로그가 영구 삭제됩니다.
+        </p>
+        <Radio.Group value={deletePeriod} onChange={e => setDeletePeriod(e.target.value)}>
+          <Space direction="vertical">
+            <Radio value="1y">1년 전 로그 삭제</Radio>
+            <Radio value="6m">6개월 전 로그 삭제</Radio>
+            <Radio value="3m">3개월 전 로그 삭제</Radio>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <Radio value="custom">날짜 지정</Radio>
+              <DatePicker
+                format="YYYY-MM-DD"
+                value={deleteBefore}
+                onChange={d => { setDeleteBefore(d); setDeletePeriod('custom') }}
+                disabled={deletePeriod !== 'custom'}
+                placeholder="이 날짜 이전 삭제"
+              />
+            </div>
+          </Space>
+        </Radio.Group>
       </Modal>
     </div>
   )
