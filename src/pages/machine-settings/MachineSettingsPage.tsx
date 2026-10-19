@@ -41,7 +41,7 @@ export default function MachineSettingsPage() {
       setPartners(p)
       setAccounts(a)
     } catch {
-      message.error('데이터를 불러오는데 실패했습니다.')
+      message.error('데이터를 불러오는 데 실패했습니다.')
     } finally {
       setLoading(false)
     }
@@ -136,7 +136,7 @@ export default function MachineSettingsPage() {
         : allShippers
       setMShippers(filtered)
     } catch {
-      message.error('화주 목록을 불러오는데 실패했습니다.')
+      message.error('화주 목록을 불러오는 데 실패했습니다.')
     }
   }
 
@@ -157,7 +157,7 @@ export default function MachineSettingsPage() {
   }
 
   const columns: TableColumnsType<Machine> = [
-    { title: '장비명', dataIndex: 'machine_name', width: 180, render: v => <span style={{ fontWeight: 600 }}>{v}</span> },
+    { title: '포장기명', dataIndex: 'machine_name', width: 180, render: v => <span style={{ fontWeight: 600 }}>{v}</span> },
     { title: 'UUID', dataIndex: 'machine_uuid', ellipsis: true },
     { title: '메인 프린터', dataIndex: 'printer_main' },
     {
@@ -210,7 +210,7 @@ export default function MachineSettingsPage() {
       children: (
         <Row gutter={16}>
           <Col span={12}>
-            <Form.Item name="machine_name" label="장비 관리명" rules={[{ required: true, message: '장비 관리명을 입력해주세요' }]}>
+            <Form.Item name="machine_name" label="포장기 관리명" rules={[{ required: true, message: '포장기 관리명을 입력해주세요' }]}>
               <Input />
             </Form.Item>
             <Form.Item name="use_inspection" label="상품검수여부"
@@ -232,7 +232,7 @@ export default function MachineSettingsPage() {
             <Form.Item name="machine_uuid" label="System UUID">
               <Input disabled placeholder="자동 생성됨" />
             </Form.Item>
-            <Form.Item name="machine_desc" label="장비 설명">
+            <Form.Item name="machine_desc" label="포장기 설명">
               <Input.TextArea rows={3} />
             </Form.Item>
           </Col>
@@ -352,7 +352,7 @@ export default function MachineSettingsPage() {
           onClick={openAdd}
           disabled={!selectedPartnerId}
         >
-          장비 추가
+          포장기 추가
         </Button>
       </div>
 
@@ -389,7 +389,7 @@ export default function MachineSettingsPage() {
         destroyOnClose
       >
         {mShippers.length === 0
-          ? <Alert message="연동된 화주사가 없습니다. API 계정의 화주를 먼저 설정해주세요." type="info" showIcon />
+          ? <Alert message="연동된 화주가 없습니다. API 계정의 화주를 먼저 설정해주세요." type="info" showIcon />
           : (
             <Checkbox.Group
               value={mShipperSelected}
