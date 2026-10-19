@@ -58,7 +58,15 @@ export default function AccountsPage() {
   const selectedWbs = wbsList.find(w => w.wbs_id === wbsId)
   const isSellmate = selectedWbs?.wbs_type === 'sellmate'
   const isEzadmin = selectedWbs?.wbs_type === 'ezadmin'
+  const isSellmateWms = (selectedWbs?.wbs_type ?? '').trim().toLowerCase() === 'sellmate-wms'
   const showReqBody = printType === 'CJ' || printType === 'PO'
+
+  // sellmate-wms 는 화주가 여럿인 3PL 창고를 전제로 하므로 계정 유형 기본값을 WMS(3PL) 로 둔다.
+  // 신규 등록이거나 수정 중에 OMS 를 바꾼 경우에만 — 저장된 계정을 열자마자 유형을 덮지 않는다.
+  // 기본값일 뿐이라 관리자가 ONE 으로 바꾸는 것은 막지 않는다.
+  useEffect(() => {
+    if (isSellmateWms && (!editing || editing.wbs_id !== wbsId)) form.setFieldValue('account_type', 'WMS')
+  }, [isSellmateWms, wbsId, editing, form])
 
   async function loadBasic() {
     const [p, w] = await Promise.all([api.getPartners(), api.getWBS()])
