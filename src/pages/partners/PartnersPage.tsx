@@ -26,7 +26,7 @@ export default function PartnersPage() {
     try {
       setData(await api.getPartners())
     } catch {
-      message.error('거래처 목록을 불러오는데 실패했습니다.')
+      message.error('거래처 목록을 불러오는 데 실패했습니다.')
     } finally {
       setLoading(false)
     }

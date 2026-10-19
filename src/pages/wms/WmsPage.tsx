@@ -20,7 +20,7 @@ export default function WmsPage() {
     try {
       setData(await api.getWBS())
     } catch {
-      message.error('WBS 목록을 불러오는데 실패했습니다.')
+      message.error('OMS 목록을 불러오는 데 실패했습니다.')
     } finally {
       setLoading(false)
     }
@@ -58,7 +58,7 @@ export default function WmsPage() {
       w.wbs_type === values.wbs_type && w.wbs_id !== editing?.wbs_id
     )
     if (isDuplicate) {
-      message.error('WBS 유형이 중복되어 추가할 수 없습니다.')
+      message.error('OMS 유형이 중복되어 추가할 수 없습니다.')
       return
     }
 
@@ -75,7 +75,7 @@ export default function WmsPage() {
       load()
     } catch (e: any) {
       if (e?.error?.includes('Duplicate') || e?.error?.includes('duplicate') || e?.error?.includes('unique')) {
-        message.error('WBS 유형이 중복되어 추가할 수 없습니다.')
+        message.error('OMS 유형이 중복되어 추가할 수 없습니다.')
       } else {
         message.error(e?.error ?? '저장에 실패했습니다.')
       }
@@ -87,7 +87,7 @@ export default function WmsPage() {
   const columns: TableColumnsType<WBS> = [
     { title: 'ID', dataIndex: 'wbs_id', width: 60 },
     {
-      title: 'WBS 명칭',
+      title: 'OMS 명칭',
       dataIndex: 'wbs_name',
       render: (v) => <span style={{ fontWeight: 600 }}>{v}</span>,
     },
@@ -105,7 +105,7 @@ export default function WmsPage() {
         <Space size={6}>
           <Button size="small" onClick={() => openEdit(r)}>수정</Button>
           <Popconfirm
-            title="WBS를 삭제하시겠습니까?"
+            title="OMS를 삭제하시겠습니까?"
             onConfirm={() => handleDelete(r.wbs_id)}
             okText="삭제" cancelText="취소" okButtonProps={{ danger: true }}
           >
@@ -120,12 +120,12 @@ export default function WmsPage() {
     <div>
       <div className={styles.pageHeader}>
         <div>
-          <h1 className={styles.title}>WMS 마스터</h1>
+          <h1 className={styles.title}>OMS 마스터</h1>
           <p className={styles.desc}>WMS 연동 시스템을 등록하고 관리합니다.</p>
         </div>
         <Space>
           <Button icon={<ReloadOutlined />} onClick={load} loading={loading}>새로고침</Button>
-          <Button type="primary" icon={<PlusOutlined />} onClick={openAdd}>WBS 추가</Button>
+          <Button type="primary" icon={<PlusOutlined />} onClick={openAdd}>OMS 추가</Button>
         </Space>
       </div>
 
@@ -140,7 +140,7 @@ export default function WmsPage() {
       </div>
 
       <Modal
-        title={editing ? 'WBS 수정' : 'WBS 추가'}
+        title={editing ? 'OMS 수정' : 'OMS 추가'}
         open={modalOpen}
         onCancel={() => setModalOpen(false)}
         onOk={handleSubmit}
@@ -148,7 +148,7 @@ export default function WmsPage() {
         destroyOnClose
       >
         <Form form={form} layout="vertical" style={{ marginTop: 16 }}>
-          <Form.Item name="wbs_name" label="WBS 명칭" rules={[{ required: true, message: '명칭을 입력해주세요' }]}>
+          <Form.Item name="wbs_name" label="OMS 명칭" rules={[{ required: true, message: '명칭을 입력해주세요' }]}>
             <Input placeholder="예: 사방넷" />
           </Form.Item>
           <Form.Item name="wbs_type" label="유형" rules={[{ required: true, message: '유형을 입력해주세요' }]}>
