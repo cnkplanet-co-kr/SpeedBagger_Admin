@@ -7,6 +7,7 @@ import type { TableColumnsType } from 'antd'
 import { PlusOutlined, ReloadOutlined, TeamOutlined } from '@ant-design/icons'
 import { useLocation } from 'react-router-dom'
 import { api } from '../../lib/api'
+import { isWmsAccount } from '../../lib/accountType'
 import type { Machine, Partner, ApiAccount, Shipper } from '../../lib/api'
 import styles from './MachineSettingsPage.module.css'
 
@@ -179,7 +180,7 @@ export default function MachineSettingsPage() {
       title: '관리', key: 'action', width: 180,
       render: (_, r) => {
         const account = accounts.find(a => a.account_id === r.account_id)
-        const isWMS = account?.account_type?.trim() === 'WMS'
+        const isWMS = isWmsAccount(account?.account_type)
         return (
           <Space size={4} wrap>
             <Button size="small" onClick={() => openEdit(r)}>수정</Button>
@@ -260,8 +261,8 @@ export default function MachineSettingsPage() {
                 <Select.Option key={a.account_id} value={a.account_id} label={a.account_name}>
                   <Space size={6}>
                     <span>{a.account_name}</span>
-                    <Tag color={a.account_type?.trim() === 'WMS' ? 'geekblue' : 'cyan'} style={{ marginInlineEnd: 0 }}>
-                      {a.account_type?.trim() === 'WMS' ? 'WMS(3PL)' : '화주'}
+                    <Tag color={isWmsAccount(a.account_type) ? 'geekblue' : 'cyan'} style={{ marginInlineEnd: 0 }}>
+                      {isWmsAccount(a.account_type) ? 'WMS(3PL)' : '화주'}
                     </Tag>
                   </Space>
                 </Select.Option>

@@ -7,6 +7,7 @@ import type { TableColumnsType } from 'antd'
 import { PlusOutlined, ReloadOutlined, SyncOutlined, TeamOutlined, ShopOutlined, EnvironmentOutlined } from '@ant-design/icons'
 import { useLocation } from 'react-router-dom'
 import { api } from '../../lib/api'
+import { isWmsAccount } from '../../lib/accountType'
 import type { ApiAccount, Partner, WBS, Shipper, Shop } from '../../lib/api'
 import styles from './AccountsPage.module.css'
 
@@ -247,7 +248,7 @@ export default function AccountsPage() {
       render: (_, r) => (
         <Space size={4} wrap>
           <Button size="small" onClick={() => openEdit(r)}>수정</Button>
-          {r.account_type?.trim() === 'WMS' && (
+          {isWmsAccount(r.account_type) && (
             <Tooltip title="화주 관리">
               <Button size="small" icon={<TeamOutlined />} onClick={() => openShipperModal(r)}>
                 화주{(r.shipper_codes?.length ?? 0) > 0 && <Tag color="blue" style={{ marginLeft: 4, lineHeight: '14px' }}>{r.shipper_codes!.length}</Tag>}
@@ -341,7 +342,7 @@ export default function AccountsPage() {
               </Form.Item>
             </Col>
           </Row>
-          {editing && accountType === 'WMS' && (
+          {editing && isWmsAccount(accountType) && (
             <div className={styles.sectionBox}>
               <div style={{ marginBottom: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Space size={6}>
