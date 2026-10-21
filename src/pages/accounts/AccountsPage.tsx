@@ -7,7 +7,7 @@ import type { TableColumnsType } from 'antd'
 import { PlusOutlined, ReloadOutlined, SyncOutlined, TeamOutlined, ShopOutlined, EnvironmentOutlined } from '@ant-design/icons'
 import { useLocation } from 'react-router-dom'
 import { api } from '../../lib/api'
-import { isWmsAccount } from '../../lib/accountType'
+import { isWmsAccount, usesWarehouse } from '../../lib/accountType'
 import type { ApiAccount, Partner, WBS, Shipper, Shop } from '../../lib/api'
 import styles from './AccountsPage.module.css'
 
@@ -56,7 +56,7 @@ export default function AccountsPage() {
   const accountType = Form.useWatch('account_type', form)
   const authType = Form.useWatch('auth_type', form)
   const selectedWbs = wbsList.find(w => w.wbs_id === wbsId)
-  const isSellmate = selectedWbs?.wbs_type === 'sellmate'
+  const hasWarehouse = usesWarehouse(selectedWbs?.wbs_type)
   const isEzadmin = selectedWbs?.wbs_type === 'ezadmin'
   const isSellmateWms = (selectedWbs?.wbs_type ?? '').trim().toLowerCase() === 'sellmate-wms'
   const showReqBody = printType === 'CJ' || printType === 'PO'
@@ -121,7 +121,7 @@ export default function AccountsPage() {
     })
     setModalOpen(true)
     const wbs = wbsList.find(w => w.wbs_id === r.wbs_id)
-    if (wbs?.wbs_type === 'sellmate') {
+    if (usesWarehouse(wbs?.wbs_type)) {
       try { setFetchedWarehouses(await api.getWarehouses(r.account_id)) } catch { /* ignore */ }
     }
   }
@@ -418,7 +418,7 @@ export default function AccountsPage() {
             </div>
           )}
 
-          {isSellmate ? (
+          {hasWarehouse ? (
             <Form.Item name="warehouse_id" label="창고">
               <Select placeholder="창고 선택" options={fetchedWarehouses.map(w => ({ value: w.id, label: w.name }))}
                 onDropdownVisibleChange={async open => {
