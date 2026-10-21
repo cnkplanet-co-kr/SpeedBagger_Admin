@@ -55,10 +55,10 @@ export default function AppLayout({ onLogout, userName }: Props) {
                 return `${styles.navTrigger} ${isActive ? styles.active : ''}`
               }}
             >
-              대쉬보드 <DownOutlined className={styles.navArrow} />
+              대시보드 <DownOutlined className={styles.navArrow} />
             </NavLink>
             <div className={styles.dropdown}>
-              <div className={styles.ddHeader}>대쉬보드 메뉴</div>
+              <div className={styles.ddHeader}>대시보드 메뉴</div>
               <NavLink to="/machine-status" className={({ isActive }) => `${styles.ddItem} ${isActive ? styles.ddActive : ''}`}>
                 <span className={styles.ddIcon}>🖨️</span> 포장기현황
               </NavLink>
@@ -89,7 +89,7 @@ export default function AppLayout({ onLogout, userName }: Props) {
                 <span className={styles.ddIcon}>🏢</span> 거래처 관리
               </NavLink>
               <NavLink to="/wms" className={({ isActive }) => `${styles.ddItem} ${isActive ? styles.ddActive : ''}`}>
-                <span className={styles.ddIcon}>🗄️</span> WMS 마스터
+                <span className={styles.ddIcon}>🗄️</span> OMS 마스터
               </NavLink>
               <NavLink to="/api-accounts" className={({ isActive }) => `${styles.ddItem} ${isActive ? styles.ddActive : ''}`}>
                 <span className={styles.ddIcon}>🔑</span> API 계정

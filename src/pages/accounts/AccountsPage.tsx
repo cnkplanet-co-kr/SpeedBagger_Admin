@@ -7,6 +7,7 @@ import type { TableColumnsType } from 'antd'
 import { PlusOutlined, ReloadOutlined, SyncOutlined, TeamOutlined, ShopOutlined, EnvironmentOutlined } from '@ant-design/icons'
 import { useLocation } from 'react-router-dom'
 import { api } from '../../lib/api'
+import { isWmsAccount } from '../../lib/accountType'
 import type { ApiAccount, Partner, WBS, Shipper, Shop } from '../../lib/api'
 import styles from './AccountsPage.module.css'
 
@@ -37,7 +38,7 @@ export default function AccountsPage() {
   const [shipperSaving, setShipperSaving] = useState(false)
   const [shipperForm] = Form.useForm()
 
-  // 판매사 모달 (테이블 버튼)
+  // 판매처 모달 (테이블 버튼)
   const [shopModalOpen, setShopModalOpen] = useState(false)
   const [shopAccount, setShopAccount] = useState<ApiAccount | null>(null)
   const [shops, setShops] = useState<Shop[]>([])
@@ -57,7 +58,15 @@ export default function AccountsPage() {
   const selectedWbs = wbsList.find(w => w.wbs_id === wbsId)
   const isSellmate = selectedWbs?.wbs_type === 'sellmate'
   const isEzadmin = selectedWbs?.wbs_type === 'ezadmin'
+  const isSellmateWms = (selectedWbs?.wbs_type ?? '').trim().toLowerCase() === 'sellmate-wms'
   const showReqBody = printType === 'CJ' || printType === 'PO'
+
+  // sellmate-wms 는 화주가 여럿인 3PL 창고를 전제로 하므로 계정 유형 기본값을 WMS(3PL) 로 둔다.
+  // 신규 등록이거나 수정 중에 OMS 를 바꾼 경우에만 — 저장된 계정을 열자마자 유형을 덮지 않는다.
+  // 기본값일 뿐이라 관리자가 ONE 으로 바꾸는 것은 막지 않는다.
+  useEffect(() => {
+    if (isSellmateWms && (!editing || editing.wbs_id !== wbsId)) form.setFieldValue('account_type', 'WMS')
+  }, [isSellmateWms, wbsId, editing, form])
 
   async function loadBasic() {
     const [p, w] = await Promise.all([api.getPartners(), api.getWBS()])
@@ -68,7 +77,7 @@ export default function AccountsPage() {
   async function loadAccounts() {
     setLoading(true)
     try { setAccounts(await api.getAccounts()) }
-    catch { message.error('계정 목록을 불러오는데 실패했습니다.') }
+    catch { message.error('계정 목록을 불러오는 데 실패했습니다.') }
     finally { setLoading(false) }
   }
 
@@ -127,7 +136,7 @@ export default function AccountsPage() {
     values.partner_id = Number(values.partner_id)
     if (values.print_type_req_body) {
       try { values.print_type_req_body = JSON.parse(values.print_type_req_body) }
-      catch { message.error('출력유형 요청 Body가 올바른 JSON 형식이 아닙니다.'); return }
+      catch { message.error('출력 유형 요청 Body가 올바른 JSON 형식이 아닙니다.'); return }
     }
     setSaving(true)
     try {
@@ -135,7 +144,7 @@ export default function AccountsPage() {
       message.success('저장되었습니다.')
       setModalOpen(false)
       loadAccounts()
-    } catch { message.error('저장에 실패했습니다.') }
+    } catch (e: any) { message.error({ content: e?.error ?? '저장에 실패했습니다.', duration: 8 }) }
     finally { setSaving(false) }
   }
 
@@ -149,7 +158,7 @@ export default function AccountsPage() {
     try {
       const data = await api.getShippers({ account_id: r.account_id })
       setShippers(data)
-    } catch { message.error('화주 목록을 불러오는데 실패했습니다.') }
+    } catch { message.error('화주 목록을 불러오는 데 실패했습니다.') }
   }
 
   async function handleShipperSave() {
@@ -162,11 +171,14 @@ export default function AccountsPage() {
       message.success('화주 설정이 저장되었습니다.')
       setShipperModalOpen(false)
       loadAccounts()
-    } catch { message.error('저장에 실패했습니다.') }
+    } catch (e: any) {
+      // 서버가 막은 이유(화주를 쓰는 포장기 목록)를 그대로 보여준다. 문구가 길어 기본 3초로는 짧다.
+      message.error({ content: e?.error ?? '저장에 실패했습니다.', duration: 8 })
+    }
     finally { setShipperSaving(false) }
   }
 
-  // ── 판매사 모달 ──────────────────────────────────────────────
+  // ── 판매처 모달 ──────────────────────────────────────────────
   async function openShopModal(r: ApiAccount) {
     setShopAccount(r)
     setShops([])
@@ -176,7 +188,7 @@ export default function AccountsPage() {
     try {
       const data = await api.getShops({ account_id: r.account_id })
       setShops(data)
-    } catch { message.error('판매사 목록을 불러오는데 실패했습니다.') }
+    } catch { message.error('판매처 목록을 불러오는 데 실패했습니다.') }
   }
 
   async function handleShopSave() {
@@ -186,7 +198,7 @@ export default function AccountsPage() {
     setShopSaving(true)
     try {
       await api.updateAccountShops(shopAccount.account_id, codes)
-      message.success('판매사 설정이 저장되었습니다.')
+      message.success('판매처 설정이 저장되었습니다.')
       setShopModalOpen(false)
       loadAccounts()
     } catch { message.error('저장에 실패했습니다.') }
@@ -226,9 +238,9 @@ export default function AccountsPage() {
     { title: 'ID', dataIndex: 'account_id', width: 60 },
     { title: '계정명', dataIndex: 'account_name', width: 180, render: v => <span style={{ fontWeight: 600 }}>{v}</span> },
     { title: 'WBS', dataIndex: 'wbs_id', render: id => wbsList.find(w => w.wbs_id === id)?.wbs_name ?? '-' },
-    { title: '계정유형', dataIndex: 'account_type', width: 100, render: v => v === 'ONE' ? '화주' : 'WMS(3PL)' },
+    { title: '계정 유형', dataIndex: 'account_type', width: 100, render: v => v === 'ONE' ? '화주' : 'WMS(3PL)' },
     {
-      title: '출력유형', dataIndex: 'print_type', width: 110,
+      title: '출력 유형', dataIndex: 'print_type', width: 110,
       render: v => v === 'CJ' ? <Tag color="orange">CJ대한통운</Tag>
         : v === 'PO' ? <Tag color="green">우체국</Tag>
         : <span style={{ color: '#9CA3AF', fontSize: 12 }}>자동</span>,
@@ -244,16 +256,16 @@ export default function AccountsPage() {
       render: (_, r) => (
         <Space size={4} wrap>
           <Button size="small" onClick={() => openEdit(r)}>수정</Button>
-          {r.account_type?.trim() === 'WMS' && (
-            <Tooltip title="화주사 관리">
+          {isWmsAccount(r.account_type) && (
+            <Tooltip title="화주 관리">
               <Button size="small" icon={<TeamOutlined />} onClick={() => openShipperModal(r)}>
                 화주{(r.shipper_codes?.length ?? 0) > 0 && <Tag color="blue" style={{ marginLeft: 4, lineHeight: '14px' }}>{r.shipper_codes!.length}</Tag>}
               </Button>
             </Tooltip>
           )}
-          <Tooltip title="판매사 관리">
+          <Tooltip title="판매처 관리">
             <Button size="small" icon={<ShopOutlined />} onClick={() => openShopModal(r)}>
-              판매사{(r.shop_codes?.length ?? 0) > 0 && <Tag color="blue" style={{ marginLeft: 4, lineHeight: '14px' }}>{r.shop_codes!.length}</Tag>}
+              판매처{(r.shop_codes?.length ?? 0) > 0 && <Tag color="blue" style={{ marginLeft: 4, lineHeight: '14px' }}>{r.shop_codes!.length}</Tag>}
             </Button>
           </Tooltip>
           {(r.print_type === 'CJ' || r.print_type === 'PO') && (
@@ -328,28 +340,28 @@ export default function AccountsPage() {
           </Row>
           <Row gutter={16}>
             <Col span={12}>
-              <Form.Item name="account_type" label="계정 타입" rules={[{ required: true }]}>
+              <Form.Item name="account_type" label="계정 유형" rules={[{ required: true }]}>
                 <Select options={[{ value: 'ONE', label: '화주' }, { value: 'WMS', label: 'WMS(3PL)' }]} />
               </Form.Item>
             </Col>
             <Col span={12}>
-              <Form.Item name="wbs_id" label="WBS 시스템" rules={[{ required: true, message: 'WBS를 선택해주세요' }]}>
-                <Select placeholder="WBS 선택" options={wbsList.map(w => ({ value: w.wbs_id, label: w.wbs_name }))} />
+              <Form.Item name="wbs_id" label="OMS" rules={[{ required: true, message: 'OMS를 선택해주세요' }]}>
+                <Select placeholder="OMS 선택" options={wbsList.map(w => ({ value: w.wbs_id, label: w.wbs_name }))} />
               </Form.Item>
             </Col>
           </Row>
-          {editing && accountType === 'WMS' && (
+          {editing && isWmsAccount(accountType) && (
             <div className={styles.sectionBox}>
               <div style={{ marginBottom: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Space size={6}>
-                  <span style={{ fontWeight: 600 }}>화주사 선택</span>
+                  <span style={{ fontWeight: 600 }}>화주 선택</span>
                   {(editing.shipper_codes?.length ?? 0) > 0 && <Tag color="blue">{editing.shipper_codes!.length}개 선택됨</Tag>}
                 </Space>
                 <Space>
                   <Button size="small" onClick={async () => {
                     const data = await api.getShippers({ account_id: editing.account_id })
                     setEditShippers(data)
-                    message.success(`${data.length}개 화주사를 불러왔습니다.`)
+                    message.success(`${data.length}개 화주를 불러왔습니다.`)
                   }}>조회</Button>
                   <Button size="small" icon={<SyncOutlined />} onClick={async () => {
                     message.loading({ content: '수집 중...', key: 'syncS' })
@@ -376,19 +388,19 @@ export default function AccountsPage() {
             <div className={styles.sectionBox}>
               <div style={{ marginBottom: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Space size={6}>
-                  <span style={{ fontWeight: 600 }}>판매사 선택</span>
+                  <span style={{ fontWeight: 600 }}>판매처 선택</span>
                   {(editing.shop_codes?.length ?? 0) > 0 && <Tag color="blue">{editing.shop_codes!.length}개 선택됨</Tag>}
                 </Space>
                 <Space>
                   <Button size="small" onClick={async () => {
                     const data = await api.getShops({ account_id: editing.account_id })
                     setEditShops(data)
-                    message.success(`${data.length}개 판매사를 불러왔습니다.`)
+                    message.success(`${data.length}개 판매처를 불러왔습니다.`)
                   }}>조회</Button>
                   <Button size="small" icon={<SyncOutlined />} onClick={async () => {
                     message.loading({ content: '수집 중...', key: 'syncSh' })
                     const r = await api.syncShops(editing.account_id)
-                    message.success({ content: `판매사 수집 완료 (${r.count}건)`, key: 'syncSh' })
+                    message.success({ content: `판매처 수집 완료 (${r.count}건)`, key: 'syncSh' })
                   }}>수집</Button>
                 </Space>
               </div>
@@ -422,7 +434,7 @@ export default function AccountsPage() {
           <Form.Item name="api_url" label="API URL" rules={[{ required: true, message: 'API URL을 입력해주세요' }]}>
             <Input placeholder="https://api.example.com" />
           </Form.Item>
-          <Form.Item name="auth_type" label="키유형" rules={[{ required: true }]}>
+          <Form.Item name="auth_type" label="키 유형" rules={[{ required: true }]}>
             <Radio.Group>
               <Radio value="query">Query (Partner/Domain Key)</Radio>
               <Radio value="bearer">Bearer Token (Client ID / Secret)</Radio>
@@ -442,12 +454,12 @@ export default function AccountsPage() {
           </Row>
           <Row gutter={16}>
             <Col span={12}>
-              <Form.Item name="delv_type" label="배송처리 타입" rules={[{ required: true }]}>
+              <Form.Item name="delv_type" label="배송처리 유형" rules={[{ required: true }]}>
                 <Select options={[{ value: 'P', label: '출력만' }, { value: '0', label: '즉시배송처리' }]} />
               </Form.Item>
             </Col>
             <Col span={12}>
-              <Form.Item name="print_type" label="출력유형">
+              <Form.Item name="print_type" label="출력 유형">
                 <Select disabled={!isEzadmin} options={[
                   { value: '', label: '자동 (텍스트)' },
                   { value: 'CJ', label: 'CJ 대한통운' },
@@ -457,7 +469,7 @@ export default function AccountsPage() {
             </Col>
           </Row>
           {showReqBody && (
-            <Form.Item name="print_type_req_body" label="출력유형 요청 Body (JSON)">
+            <Form.Item name="print_type_req_body" label="출력 유형 요청 Body (JSON)">
               <TextArea rows={4} placeholder='{"key": "value"}' />
             </Form.Item>
           )}
@@ -465,7 +477,7 @@ export default function AccountsPage() {
       </Modal>
 
       {/* ── 화주 모달 ── */}
-      <Modal title={`화주사 관리 — ${shipperAccount?.account_name}`} open={shipperModalOpen}
+      <Modal title={`화주 관리 — ${shipperAccount?.account_name}`} open={shipperModalOpen}
         onCancel={() => setShipperModalOpen(false)} onOk={handleShipperSave} confirmLoading={shipperSaving}
         width={560} destroyOnClose>
         <div style={{ marginBottom: 12, display: 'flex', justifyContent: 'flex-end' }}>
@@ -480,7 +492,7 @@ export default function AccountsPage() {
         </div>
         <Form form={shipperForm} layout="vertical">
           {shippers.length === 0
-            ? <Alert message="조회된 화주사가 없습니다. 수집 버튼을 눌러주세요." type="info" showIcon />
+            ? <Alert message="조회된 화주가 없습니다. 수집 버튼을 눌러주세요." type="info" showIcon />
             : <Form.Item name="shipper_codes">
                 <Checkbox.Group style={{ width: '100%' }}>
                   <Row>{shippers.map(s => (
@@ -494,8 +506,8 @@ export default function AccountsPage() {
         </Form>
       </Modal>
 
-      {/* ── 판매사 모달 ── */}
-      <Modal title={`판매사 관리 — ${shopAccount?.account_name}`} open={shopModalOpen}
+      {/* ── 판매처 모달 ── */}
+      <Modal title={`판매처 관리 — ${shopAccount?.account_name}`} open={shopModalOpen}
         onCancel={() => setShopModalOpen(false)} onOk={handleShopSave} confirmLoading={shopSaving}
         width={560} destroyOnClose>
         <div style={{ marginBottom: 12, display: 'flex', justifyContent: 'flex-end' }}>
@@ -505,12 +517,12 @@ export default function AccountsPage() {
             const r = await api.syncShops(shopAccount.account_id)
             const data = await api.getShops({ account_id: shopAccount.account_id })
             setShops(data)
-            message.success({ content: `판매사 수집 완료 (${r.count}건)`, key: 'syncSh' })
+            message.success({ content: `판매처 수집 완료 (${r.count}건)`, key: 'syncSh' })
           }}>수집 (DB저장)</Button>
         </div>
         <Form form={shopForm} layout="vertical">
           {shops.length === 0
-            ? <Alert message="조회된 판매사가 없습니다. 수집 버튼을 눌러주세요." type="info" showIcon />
+            ? <Alert message="조회된 판매처가 없습니다. 수집 버튼을 눌러주세요." type="info" showIcon />
             : <Form.Item name="shop_codes">
                 <Checkbox.Group style={{ width: '100%' }}>
                   <Row>{shops.map(s => (

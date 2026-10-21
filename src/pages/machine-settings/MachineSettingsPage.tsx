@@ -7,6 +7,7 @@ import type { TableColumnsType } from 'antd'
 import { PlusOutlined, ReloadOutlined, TeamOutlined } from '@ant-design/icons'
 import { useLocation } from 'react-router-dom'
 import { api } from '../../lib/api'
+import { isWmsAccount } from '../../lib/accountType'
 import type { Machine, Partner, ApiAccount, Shipper } from '../../lib/api'
 import styles from './MachineSettingsPage.module.css'
 
@@ -41,7 +42,7 @@ export default function MachineSettingsPage() {
       setPartners(p)
       setAccounts(a)
     } catch {
-      message.error('데이터를 불러오는데 실패했습니다.')
+      message.error('데이터를 불러오는 데 실패했습니다.')
     } finally {
       setLoading(false)
     }
@@ -136,7 +137,7 @@ export default function MachineSettingsPage() {
         : allShippers
       setMShippers(filtered)
     } catch {
-      message.error('화주 목록을 불러오는데 실패했습니다.')
+      message.error('화주 목록을 불러오는 데 실패했습니다.')
     }
   }
 
@@ -157,7 +158,7 @@ export default function MachineSettingsPage() {
   }
 
   const columns: TableColumnsType<Machine> = [
-    { title: '장비명', dataIndex: 'machine_name', width: 180, render: v => <span style={{ fontWeight: 600 }}>{v}</span> },
+    { title: '포장기명', dataIndex: 'machine_name', width: 180, render: v => <span style={{ fontWeight: 600 }}>{v}</span> },
     { title: 'UUID', dataIndex: 'machine_uuid', ellipsis: true },
     { title: '메인 프린터', dataIndex: 'printer_main' },
     {
@@ -179,7 +180,7 @@ export default function MachineSettingsPage() {
       title: '관리', key: 'action', width: 180,
       render: (_, r) => {
         const account = accounts.find(a => a.account_id === r.account_id)
-        const isWMS = account?.account_type?.trim() === 'WMS'
+        const isWMS = isWmsAccount(account?.account_type)
         return (
           <Space size={4} wrap>
             <Button size="small" onClick={() => openEdit(r)}>수정</Button>
@@ -210,7 +211,7 @@ export default function MachineSettingsPage() {
       children: (
         <Row gutter={16}>
           <Col span={12}>
-            <Form.Item name="machine_name" label="장비 관리명" rules={[{ required: true, message: '장비 관리명을 입력해주세요' }]}>
+            <Form.Item name="machine_name" label="포장기 관리명" rules={[{ required: true, message: '포장기 관리명을 입력해주세요' }]}>
               <Input />
             </Form.Item>
             <Form.Item name="use_inspection" label="상품검수여부"
@@ -232,7 +233,7 @@ export default function MachineSettingsPage() {
             <Form.Item name="machine_uuid" label="System UUID">
               <Input disabled placeholder="자동 생성됨" />
             </Form.Item>
-            <Form.Item name="machine_desc" label="장비 설명">
+            <Form.Item name="machine_desc" label="포장기 설명">
               <Input.TextArea rows={3} />
             </Form.Item>
           </Col>
@@ -260,8 +261,8 @@ export default function MachineSettingsPage() {
                 <Select.Option key={a.account_id} value={a.account_id} label={a.account_name}>
                   <Space size={6}>
                     <span>{a.account_name}</span>
-                    <Tag color={a.account_type?.trim() === 'WMS' ? 'geekblue' : 'cyan'} style={{ marginInlineEnd: 0 }}>
-                      {a.account_type?.trim() === 'WMS' ? 'WMS(3PL)' : '화주'}
+                    <Tag color={isWmsAccount(a.account_type) ? 'geekblue' : 'cyan'} style={{ marginInlineEnd: 0 }}>
+                      {isWmsAccount(a.account_type) ? 'WMS(3PL)' : '화주'}
                     </Tag>
                   </Space>
                 </Select.Option>
@@ -352,7 +353,7 @@ export default function MachineSettingsPage() {
           onClick={openAdd}
           disabled={!selectedPartnerId}
         >
-          장비 추가
+          포장기 추가
         </Button>
       </div>
 
@@ -389,7 +390,7 @@ export default function MachineSettingsPage() {
         destroyOnClose
       >
         {mShippers.length === 0
-          ? <Alert message="연동된 화주사가 없습니다. API 계정의 화주를 먼저 설정해주세요." type="info" showIcon />
+          ? <Alert message="연동된 화주가 없습니다. API 계정의 화주를 먼저 설정해주세요." type="info" showIcon />
           : (
             <Checkbox.Group
               value={mShipperSelected}
