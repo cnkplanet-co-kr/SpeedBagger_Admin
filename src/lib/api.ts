@@ -55,6 +55,7 @@ export interface ApiAccount {
   delv_interval: number
   print_type: string
   print_type_req_body?: string
+  print_content_type?: number  // 출력내용 (0: 일반, 1: 상품출력제외)
   waybill_template?: string
   warehouse_id?: number
   shipper_codes?: string[] | null
