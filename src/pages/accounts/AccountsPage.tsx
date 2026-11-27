@@ -59,6 +59,8 @@ export default function AccountsPage() {
   const hasWarehouse = usesWarehouse(selectedWbs?.wbs_type)
   const isEzadmin = selectedWbs?.wbs_type === 'ezadmin'
   const isSellmateWms = (selectedWbs?.wbs_type ?? '').trim().toLowerCase() === 'sellmate-wms'
+  // 출력내용(상품출력제외)은 sellmate / sellmate-wms 계정에서만 쓴다. 그 외 OMS 로 저장하면 handleSubmit 에서 0 으로 내린다.
+  const isSellmate = ['sellmate', 'sellmate-wms'].includes((selectedWbs?.wbs_type ?? '').trim().toLowerCase())
   const showReqBody = printType === 'CJ' || printType === 'PO'
 
   // sellmate-wms 는 화주가 여럿인 3PL 창고를 전제로 하므로 계정 유형 기본값을 WMS(3PL) 로 둔다.
@@ -103,7 +105,7 @@ export default function AccountsPage() {
     setEditShippers([])
     setEditShops([])
     form.resetFields()
-    form.setFieldsValue({ partner_id: selectedPartnerId, is_active: 'Y', account_type: 'ONE', delv_type: '0', print_type: '', auth_type: 'query' })
+    form.setFieldsValue({ partner_id: selectedPartnerId, is_active: 'Y', account_type: 'ONE', delv_type: '0', print_type: '', print_content_type: 0, auth_type: 'query' })
     setModalOpen(true)
   }
 
@@ -134,6 +136,10 @@ export default function AccountsPage() {
   async function handleSubmit() {
     const values = await form.validateFields()
     values.partner_id = Number(values.partner_id)
+    // 출력내용 칸은 sellmate 계열에서만 보여 숨겨지면 요청에서 빠지고 서버는 기존 값을 유지한다.
+    // sellmate 에서 상품출력제외를 켠 뒤 다른 OMS 로 바꾸면 1 이 남아 스캔이 실패하므로 0 으로 내린다.
+    // WBS 목록을 아직 못 받아 종류를 모를 때는 건드리지 않는다.
+    if (selectedWbs && !isSellmate) values.print_content_type = 0
     if (values.print_type_req_body) {
       try { values.print_type_req_body = JSON.parse(values.print_type_req_body) }
       catch { message.error('출력 유형 요청 Body가 올바른 JSON 형식이 아닙니다.'); return }
@@ -453,12 +459,12 @@ export default function AccountsPage() {
             </Col>
           </Row>
           <Row gutter={16}>
-            <Col span={12}>
+            <Col span={isSellmate ? 8 : 12}>
               <Form.Item name="delv_type" label="배송처리 유형" rules={[{ required: true }]}>
                 <Select options={[{ value: 'P', label: '출력만' }, { value: '0', label: '즉시배송처리' }]} />
               </Form.Item>
             </Col>
-            <Col span={12}>
+            <Col span={isSellmate ? 8 : 12}>
               <Form.Item name="print_type" label="출력 유형">
                 <Select disabled={!isEzadmin} options={[
                   { value: '', label: '자동 (텍스트)' },
@@ -467,6 +473,16 @@ export default function AccountsPage() {
                 ]} />
               </Form.Item>
             </Col>
+            {isSellmate && (
+              <Col span={8}>
+                {/* print_content_type: 0 일반, 1 상품출력제외 — 체크박스 ↔ 0/1 변환 */}
+                <Form.Item name="print_content_type" label="출력내용"
+                  getValueProps={v => ({ checked: v === 1 })}
+                  getValueFromEvent={e => (e.target.checked ? 1 : 0)}>
+                  <Checkbox>상품출력제외</Checkbox>
+                </Form.Item>
+              </Col>
+            )}
           </Row>
           {showReqBody && (
             <Form.Item name="print_type_req_body" label="출력 유형 요청 Body (JSON)">
